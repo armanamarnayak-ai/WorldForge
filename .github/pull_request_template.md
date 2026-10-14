@@ -22,7 +22,7 @@ Describe compatibility, safety, privacy, determinism, and unsupported behavior r
 
 ## Next milestone
 
-State the next recommended scoped milestone. A v0.1 candidate should stop before implementing v0.2.
+State the next recommended scoped milestone. Release preparation should not begin later milestones.
 
 ## Review checklist
 

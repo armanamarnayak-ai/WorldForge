@@ -3,12 +3,13 @@
 These are directions for review, not available commands, release dates, or promises. v0.1 must
 remain a working, testable foundation before implementation of later milestones begins.
 
-## v0.1 — Foundation and payments vertical slice
+## v0.1.0 — Foundation and payments vertical slice
 
 OpenAPI subset → versioned world IR → stateful synthetic payments → seeded scenarios → agent
 protocol → explicit evaluation → local event history → deterministic replay. Includes a reference
 agent, CLI, failure injection, tests, documentation, and clean-install packaging validation.
-The release candidate requires maintainer review before release or merging into `main`.
+The implementation has been reviewed, CI-verified, and merged into `main`. Historical review
+and validation evidence is preserved in [docs/v0.1-review.md](docs/v0.1-review.md).
 
 ## v0.2 — Integration and failure discovery
 
