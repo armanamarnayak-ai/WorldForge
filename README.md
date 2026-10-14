@@ -1,11 +1,11 @@
-# WorldForge
+# WorldForge v0.1.0
 
 **Give your AI a world to learn in before giving it yours.**
 
 WorldForge is an open-source artificial experience engine for stateful synthetic environments
 where autonomous agents can be evaluated and their tool interactions replayed.
 
-The v0.1 release candidate is a local Python library and CLI. Its working vertical slice compiles
+WorldForge v0.1.0 is a local Python library and CLI. Its working vertical slice compiles
 a documented OpenAPI subset, simulates a payments world, generates seeded duplicate-payment
 scenarios, runs a reference or custom agent, evaluates state changes, and saves replayable runs.
 The reference agent needs no model account, API key, or paid service.
@@ -59,7 +59,7 @@ Default generated scenarios have no injected failures. Authored `Scenario` objec
 inject an `error_before` failure before an action mutates state. Failures occur at specified
 action occurrences; they do not depend on wall-clock timing.
 
-## What v0.1 supports
+## What v0.1.0 supports
 
 - Versioned Pydantic contracts for worlds, resources, actions, state, scenarios, events, runs,
   evaluation, and resource usage, with exportable JSON schemas.
@@ -105,7 +105,7 @@ filesystem, so use external isolation for untrusted code. Local runs can contain
 observations and tool data; automatic PII or secret scrubbing is not implemented. Review artifacts
 before sharing them. Read [SECURITY.md](SECURITY.md) for the boundary and reporting guidance.
 
-This is an experimental v0.1 foundation. It does not claim production fidelity or sandbox
+WorldForge v0.1.0 is an experimental foundation. It does not claim production fidelity or sandbox
 security. MCP, a dashboard, provider integrations, Failure Oracle, Reality Distillation, and EVOLVE
 are future work described in [ROADMAP.md](ROADMAP.md).
 

@@ -1,6 +1,6 @@
 # Getting started
 
-WorldForge v0.1 is a local Python package and CLI. Use Python 3.11+ on Linux or macOS;
+WorldForge v0.1.0 is a local Python package and CLI. Use Python 3.11+ on Linux or macOS;
 Windows is not currently validated. No database, server, model account, or API key is required
 for the included payments example and reference agent.
 
@@ -14,8 +14,7 @@ source .venv/bin/activate
 python -m pip install -e '.[dev]'
 ```
 
-The release candidate may live on its review branch until it is merged; check out the candidate
-branch if it is not on `main` yet. Cloud tasks should use their existing checkout.
+The v0.1 implementation is available on `main`. Cloud tasks should use their existing checkout.
 
 ## Compile and inspect a world
 

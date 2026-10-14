@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.0 — Unreleased release candidate
+## 0.1.0 — 2026-10-14
 
 - Typed, versioned world, scenario, state, event, run, and evaluation contracts.
 - OpenAPI subset compiler with declared/inferred provenance and compatibility reporting.
@@ -10,4 +10,4 @@
 - Explicit evaluation, usage measurements, local run storage, and deterministic action replay.
 - CLI, example specifications and adapters, tests, packaging, documentation, and GitHub CI.
 
-This entry describes the v0.1 candidate. No public release date or remote CI result is asserted.
+Initial public release of the local OpenAPI-to-evaluation-and-replay workflow.

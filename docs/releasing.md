@@ -1,11 +1,13 @@
 # Releasing WorldForge
 
-v0.1 is a release candidate until maintainers explicitly approve it. Do not start v0.2, merge the
-candidate, publish a package, or create a release tag automatically as part of candidate review.
+WorldForge v0.1.0 packages the reviewed and CI-verified implementation on `main`. Prepare the
+release on `worldforge/v0.1.0-release` and open a PR into `main`. Merging the release-preparation
+PR, creating the `v0.1.0` tag, and publishing a release or package require separate maintainer
+authorization. Do not begin later milestones as part of release preparation.
 
-## Candidate validation
+## Release validation
 
-On the candidate branch with development dependencies installed:
+On the release-preparation branch with development dependencies installed:
 
 ```bash
 ruff check .
@@ -56,10 +58,12 @@ and temporary verification workspaces out of commits.
 Check package metadata and the complete Apache-2.0 license; inspect both wheel and source
 distribution. Review `git diff` and `git status` for secrets, private observations, generated
 junk, unexpected files, and placeholder features. Confirm documentation matches the installed
-CLI and update the changelog/version together when approving a release.
+CLI. Confirm that the package version and dated changelog entry agree; leave an already correct
+version unchanged.
 
-Open a PR containing implemented behavior, architecture decisions, validation evidence, manual
-verification, known limitations, and the proposed next milestone. Do not merge it automatically.
-After maintainer approval, maintainers can tag the approved commit and create a GitHub release
-with the matching changelog and artifacts. Package-registry publication requires a separately
-configured, authorized publishing workflow; this repository's CI does not publish packages.
+Open a release-preparation PR containing documentation changes, validation evidence, manual
+verification, and known limitations. Do not merge it automatically. After maintainer approval
+and merging the preparation PR, maintainers can tag the approved `main` commit as `v0.1.0`
+and create a GitHub release with the matching changelog and artifacts. Package-registry
+publication requires a separately configured, authorized publishing workflow; this repository's
+CI does not publish packages.
