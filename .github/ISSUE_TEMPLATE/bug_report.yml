@@ -1,0 +1,41 @@
+name: Bug report
+description: Report a reproducible problem with the current workflow.
+title: '[Bug]: '
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use synthetic inputs and remove credentials and private run data. For security vulnerabilities, follow SECURITY.md.
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+      description: Include Python version and operating system.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction
+      description: Provide exact commands and a minimal synthetic specification or scenario.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior and output
+      description: Include exit status and relevant sanitized output.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Include a sanitized replay mismatch or compatibility issue if relevant.

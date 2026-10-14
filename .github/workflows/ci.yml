@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main, 'worldforge/**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.11', '3.12', '3.13']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: Install development dependencies
+        run: python -m pip install -e '.[dev]'
+      - name: Lint, format, and type check
+        run: |
+          ruff check .
+          ruff format --check .
+          mypy src/worldforge
+      - name: Test
+        run: pytest
+      - name: Build wheel and source distribution
+        run: python -m build
+      - name: Exercise the installed wheel outside the checkout
+        shell: bash
+        run: |
+          VERIFY_ROOT="$RUNNER_TEMP/worldforge-wheel"
+          python -m venv "$VERIFY_ROOT/venv"
+          "$VERIFY_ROOT/venv/bin/python" -m pip install "$GITHUB_WORKSPACE"/dist/*.whl
+          cd "$VERIFY_ROOT"
+          "$VERIFY_ROOT/venv/bin/worldforge" --help
+          "$VERIFY_ROOT/venv/bin/worldforge" init
+          "$VERIFY_ROOT/venv/bin/worldforge" validate "$GITHUB_WORKSPACE/examples/payments/openapi.yaml"
+          "$VERIFY_ROOT/venv/bin/worldforge" import "$GITHUB_WORKSPACE/examples/payments/openapi.yaml"
+          "$VERIFY_ROOT/venv/bin/worldforge" world inspect
+          "$VERIFY_ROOT/venv/bin/worldforge" scenario generate --count 2 --seed 42
+          "$VERIFY_ROOT/venv/bin/worldforge" run
+          "$VERIFY_ROOT/venv/bin/python" - <<'PY'
+          from pathlib import Path
+          import subprocess
+          import sys
+
+          cli = Path(sys.executable).with_name("worldforge")
+          runs = sorted(Path(".worldforge/runs").glob("WF-*.json"))
+          assert len(runs) == 2, "expected two persisted runs"
+          for run in runs:
+              subprocess.run([str(cli), "replay", run.stem], check=True)
+          PY
+          "$VERIFY_ROOT/venv/bin/worldforge" run --agent "$GITHUB_WORKSPACE/examples/agents/reference.py" --trust-agent-code
+          "$VERIFY_ROOT/venv/bin/worldforge" import "$GITHUB_WORKSPACE/examples/payments/openapi.yaml" --workspace response-lost
+          "$VERIFY_ROOT/venv/bin/worldforge" scenario generate --count 2 --seed 42 --response-lost --workspace response-lost
+          "$VERIFY_ROOT/venv/bin/worldforge" run --workspace response-lost

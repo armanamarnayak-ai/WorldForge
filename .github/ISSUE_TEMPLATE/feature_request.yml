@@ -1,0 +1,30 @@
+name: Feature request
+description: Propose a scoped improvement and how to validate it.
+title: '[Feature]: '
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem and use case
+      description: Describe who is affected and the concrete workflow.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: Explain scope, examples, and relationship to the roadmap.
+    validations:
+      required: true
+  - type: textarea
+    id: validation
+    attributes:
+      label: Validation and risks
+      description: Suggest tests, compatibility implications, and security or reproducibility considerations.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
