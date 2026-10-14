@@ -10,7 +10,7 @@ readme = "README.md"
 requires-python = ">=3.11"
 license = "Apache-2.0"
 authors = [{name = "WorldForge contributors"}]
-dependencies = ["pydantic>=2.10,<3", "PyYAML>=6.0.2,<7", "jsonschema>=4.23,<5", "typer>=0.15,<1"]
+dependencies = ["pydantic>=2.11,<3", "PyYAML>=6.0.2,<7", "jsonschema>=4.23,<5", "typer>=0.15,<1"]
 
 [project.optional-dependencies]
 dev = ["pytest>=8.3,<10", "hypothesis>=6.125,<7", "ruff>=0.11,<1", "mypy>=1.15,<2", "types-PyYAML>=6.0.12", "types-jsonschema>=4.23", "build>=1.2,<2"]

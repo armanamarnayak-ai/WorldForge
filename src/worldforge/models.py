@@ -2,17 +2,17 @@
 
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, JsonValue, model_validator
 
 
 class Contract(BaseModel):
-    model_config = ConfigDict(extra="forbid", validate_assignment=True)
+    model_config = ConfigDict(extra="forbid", validate_assignment=True, serialize_by_alias=True)
 
 
-class Origin(str, Enum):
+class Origin(StrEnum):
     DECLARED = "declared"
     INFERRED = "inferred"
 
@@ -159,7 +159,7 @@ class WorldEvent(Contract):
 
 
 class ResourceUsage(Contract):
-    confidence: Literal["EXACT"] = "EXACT"
+    counter_confidence: Literal["EXACT"] = "EXACT"
     tool_calls: int = Field(default=0, ge=0)
     world_steps: int = Field(default=0, ge=0)
     retries: int = Field(default=0, ge=0)
@@ -168,6 +168,13 @@ class ResourceUsage(Contract):
     input_tokens: int | None = Field(default=None, ge=0)
     output_tokens: int | None = Field(default=None, ge=0)
     estimated_cost_usd: float | None = Field(default=None, ge=0)
+    cost_confidence: Literal["ESTIMATED"] | None = None
+
+    @model_validator(mode="after")
+    def label_estimated_cost(self) -> ResourceUsage:
+        if (self.estimated_cost_usd is None) != (self.cost_confidence is None):
+            raise ValueError("estimated cost and its ESTIMATED label must be supplied together")
+        return self
 
 
 class EvaluationResult(Contract):

@@ -31,6 +31,7 @@ def test_world_roundtrip_preserves_schema_and_provenance():
     world = example_world()
     assert WorldDefinition.model_validate_json(world.model_dump_json(by_alias=True)) == world
     assert world.model_dump(by_alias=True)["resources"]["customer"]["schema"] == {"type": "object"}
+    assert WorldDefinition.model_validate_json(world.model_dump_json()) == world
 
 
 def test_unknown_version_and_fields_fail():

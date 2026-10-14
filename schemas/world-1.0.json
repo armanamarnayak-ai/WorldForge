@@ -1,0 +1,279 @@
+{
+  "$defs": {
+    "CompatibilityIssue": {
+      "additionalProperties": false,
+      "properties": {
+        "location": {
+          "title": "Location",
+          "type": "string"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        },
+        "severity": {
+          "enum": [
+            "warning",
+            "unsupported"
+          ],
+          "title": "Severity",
+          "type": "string"
+        }
+      },
+      "required": [
+        "location",
+        "severity",
+        "reason"
+      ],
+      "title": "CompatibilityIssue",
+      "type": "object"
+    },
+    "JsonValue": {},
+    "Origin": {
+      "enum": [
+        "declared",
+        "inferred"
+      ],
+      "title": "Origin",
+      "type": "string"
+    },
+    "Provenance": {
+      "additionalProperties": false,
+      "properties": {
+        "origin": {
+          "$ref": "#/$defs/Origin"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        },
+        "source": {
+          "title": "Source",
+          "type": "string"
+        }
+      },
+      "required": [
+        "origin",
+        "source",
+        "reason"
+      ],
+      "title": "Provenance",
+      "type": "object"
+    },
+    "Relationship": {
+      "additionalProperties": false,
+      "properties": {
+        "field": {
+          "title": "Field",
+          "type": "string"
+        },
+        "provenance": {
+          "$ref": "#/$defs/Provenance"
+        },
+        "resource": {
+          "title": "Resource",
+          "type": "string"
+        },
+        "target_resource": {
+          "title": "Target Resource",
+          "type": "string"
+        }
+      },
+      "required": [
+        "resource",
+        "field",
+        "target_resource",
+        "provenance"
+      ],
+      "title": "Relationship",
+      "type": "object"
+    },
+    "WorldAction": {
+      "additionalProperties": false,
+      "properties": {
+        "input_schema": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Input Schema",
+          "type": "object"
+        },
+        "kind": {
+          "enum": [
+            "create",
+            "get",
+            "list",
+            "refund",
+            "unsupported"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "method": {
+          "title": "Method",
+          "type": "string"
+        },
+        "operation_id": {
+          "title": "Operation Id",
+          "type": "string"
+        },
+        "path": {
+          "title": "Path",
+          "type": "string"
+        },
+        "provenance": {
+          "$ref": "#/$defs/Provenance"
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reason"
+        },
+        "resource": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Resource"
+        },
+        "response_schemas": {
+          "additionalProperties": {
+            "additionalProperties": {
+              "$ref": "#/$defs/JsonValue"
+            },
+            "type": "object"
+          },
+          "title": "Response Schemas",
+          "type": "object"
+        },
+        "supported": {
+          "default": true,
+          "title": "Supported",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "operation_id",
+        "method",
+        "path",
+        "kind",
+        "provenance"
+      ],
+      "title": "WorldAction",
+      "type": "object"
+    },
+    "WorldResource": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "provenance": {
+          "$ref": "#/$defs/Provenance"
+        },
+        "schema": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Schema",
+          "type": "object"
+        }
+      },
+      "required": [
+        "name",
+        "schema",
+        "provenance"
+      ],
+      "title": "WorldResource",
+      "type": "object"
+    }
+  },
+  "$id": "https://worldforge.local/schemas/world-1.0.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "actions": {
+      "additionalProperties": {
+        "$ref": "#/$defs/WorldAction"
+      },
+      "title": "Actions",
+      "type": "object"
+    },
+    "issues": {
+      "items": {
+        "$ref": "#/$defs/CompatibilityIssue"
+      },
+      "title": "Issues",
+      "type": "array"
+    },
+    "metadata": {
+      "additionalProperties": {
+        "$ref": "#/$defs/JsonValue"
+      },
+      "title": "Metadata",
+      "type": "object"
+    },
+    "relationships": {
+      "items": {
+        "$ref": "#/$defs/Relationship"
+      },
+      "title": "Relationships",
+      "type": "array"
+    },
+    "resources": {
+      "additionalProperties": {
+        "$ref": "#/$defs/WorldResource"
+      },
+      "title": "Resources",
+      "type": "object"
+    },
+    "rules": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Rules",
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "version": {
+      "default": "1",
+      "title": "Version",
+      "type": "string"
+    },
+    "world_id": {
+      "minLength": 1,
+      "title": "World Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "world_id",
+    "title",
+    "resources",
+    "actions"
+  ],
+  "title": "WorldDefinition",
+  "type": "object"
+}

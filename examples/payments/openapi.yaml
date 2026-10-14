@@ -1,0 +1,229 @@
+openapi: 3.0.3
+info:
+  title: WorldForge Synthetic Payments
+  version: '1'
+  description: >-
+    A local synthetic payments world. Integer amounts are minor currency units.
+    An API description alone does not establish real payment provider behavior.
+x-worldforge:
+  id: payments
+  version: '1'
+  rules:
+    - refund_payment_exists
+    - refund_amount_positive
+    - refund_total_within_payment
+    - refund_idempotency_key
+paths:
+  /customers:
+    post:
+      operationId: create_customer
+      summary: Create a synthetic customer
+      x-worldforge: {kind: create, resource: customer}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [name]
+              properties:
+                name: {type: string, minLength: 1, maxLength: 100}
+                email: {type: string, maxLength: 254}
+      responses:
+        '201':
+          description: Created customer
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Customer'}
+    get:
+      operationId: list_customers
+      summary: List synthetic customers
+      x-worldforge: {kind: list, resource: customer}
+      responses:
+        '200':
+          description: Customers in stable identifier order
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items: {$ref: '#/components/schemas/Customer'}
+  /customers/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: {type: string, minLength: 1}
+    get:
+      operationId: get_customer
+      summary: Retrieve a customer
+      x-worldforge: {kind: get, resource: customer}
+      responses:
+        '200':
+          description: Customer
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Customer'}
+  /payments:
+    post:
+      operationId: create_payment
+      summary: Create a successful synthetic payment
+      x-worldforge: {kind: create, resource: payment}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [customer_id, amount, currency]
+              properties:
+                customer_id: {type: string, minLength: 1}
+                amount: {type: integer, minimum: 1}
+                currency: {type: string, enum: [USD, EUR, INR]}
+                duplicate_of: {type: string, nullable: true}
+      responses:
+        '201':
+          description: Created payment
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Payment'}
+    get:
+      operationId: list_payments
+      summary: List payments, optionally for one customer
+      x-worldforge: {kind: list, resource: payment}
+      parameters:
+        - name: customer_id
+          in: query
+          schema: {type: string, minLength: 1}
+      responses:
+        '200':
+          description: Payments in stable identifier order
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items: {$ref: '#/components/schemas/Payment'}
+  /payments/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: {type: string, minLength: 1}
+    get:
+      operationId: get_payment
+      summary: Retrieve a payment
+      x-worldforge: {kind: get, resource: payment}
+      responses:
+        '200':
+          description: Payment
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Payment'}
+  /refunds:
+    post:
+      operationId: create_refund
+      summary: Refund all or part of a payment safely under a stable key
+      description: >-
+        A first call creates a refund and updates the payment. Repeating the same
+        key and arguments returns the original refund without another mutation.
+        Both calls return the same 201 status and refund data.
+        Reusing a key with changed arguments fails. Cumulative refunds may not
+        exceed the payment amount. Keys are scoped to this synthetic world run.
+      x-worldforge: {kind: refund, resource: refund}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [payment_id, amount, idempotency_key]
+              properties:
+                payment_id: {type: string, minLength: 1}
+                amount: {type: integer, minimum: 1}
+                idempotency_key: {type: string, minLength: 1, maxLength: 200}
+      responses:
+        '201':
+          description: Created refund, or the original refund for a repeated idempotency key
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Refund'}
+    get:
+      operationId: list_refunds
+      summary: List refunds, optionally for one payment
+      x-worldforge: {kind: list, resource: refund}
+      parameters:
+        - name: payment_id
+          in: query
+          schema: {type: string, minLength: 1}
+      responses:
+        '200':
+          description: Refunds in stable identifier order
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items: {$ref: '#/components/schemas/Refund'}
+components:
+  schemas:
+    Customer:
+      type: object
+      x-worldforge-resource: customer
+      additionalProperties: false
+      required: [id, name]
+      properties:
+        id: {type: string, minLength: 1}
+        name: {type: string, minLength: 1, maxLength: 100}
+        email: {type: string, maxLength: 254}
+    Payment:
+      type: object
+      x-worldforge-resource: payment
+      additionalProperties: false
+      required: [id, customer_id, amount, currency, status]
+      properties:
+        id: {type: string, minLength: 1}
+        customer_id:
+          type: string
+          minLength: 1
+          x-worldforge-reference: customer
+        amount: {type: integer, minimum: 1}
+        currency: {type: string, enum: [USD, EUR, INR]}
+        status:
+          type: string
+          enum: [succeeded, partially_refunded, refunded]
+          default: succeeded
+        duplicate_of:
+          type: string
+          nullable: true
+          default: null
+          x-worldforge-reference: payment
+        refunded_amount: {type: integer, minimum: 0, default: 0}
+    Refund:
+      type: object
+      x-worldforge-resource: refund
+      additionalProperties: false
+      required: [id, payment_id, amount, idempotency_key]
+      properties:
+        id: {type: string, minLength: 1}
+        payment_id:
+          type: string
+          minLength: 1
+          x-worldforge-reference: payment
+        amount: {type: integer, minimum: 1}
+        idempotency_key: {type: string, minLength: 1, maxLength: 200}
