@@ -1,8 +1,8 @@
 # Contributing to WorldForge
 
-WorldForge v0.1.0 is the released foundation; v0.2 development extends integration and failure
+WorldForge v0.2.0 extends the v0.1.0 foundation with integration and failure
 discovery. Please discuss large scope changes in an issue before implementing them;
-[ROADMAP.md](ROADMAP.md) distinguishes implemented development scope from later work.
+[ROADMAP.md](ROADMAP.md) distinguishes implemented capabilities from later work.
 Follow our [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## Development setup

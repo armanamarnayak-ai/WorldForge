@@ -1,4 +1,4 @@
-# Static MCP compiler subset — v0.2 development
+# Static MCP compiler subset — v0.2.0
 
 WorldForge compiles a local regular-file UTF-8 JSON/YAML document containing MCP-style tool
 definitions. It does not connect to an MCP server, perform initialization or capability
