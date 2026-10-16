@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.2.0.dev0 — Unreleased development
+## 0.2.0 — 2026-10-17
 
 - Static/local MCP tool-schema compiler with explicit synthetic bindings, output schemas,
   preserved descriptions/provenance, bounded parsing, and compatibility reporting.
@@ -17,8 +17,8 @@
   email fixture using the shared simulator and runtime.
 - Schema `1.1` extensions with frozen released `1.0` schemas and compatibility for legacy run replay.
 
-Development implementation for independent review. No v0.2 tag, release, or registry publication.
-Dashboard work and all v0.3/v0.4 systems are deferred.
+Integration and Failure Discovery, extending the released v0.1.0 foundation.
+Dashboard work and all v0.3/v0.4 systems remain deferred.
 
 ## 0.1.0 — 2026-10-14
 

@@ -1,7 +1,7 @@
 # Security policy
 
-WorldForge is experimental; v0.1.0 is released and v0.2 is in development. Security fixes target
-the current development version; no older-release support commitment or audited sandbox is provided.
+WorldForge v0.2.0 is the current package version; the project remains experimental. Security fixes
+target the current version; no older-release support commitment or audited sandbox is provided.
 
 ## Boundaries
 

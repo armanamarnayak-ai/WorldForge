@@ -1,7 +1,7 @@
 # Getting started
 
-WorldForge is a local Python package and CLI. The released foundation is v0.1.0; this branch
-develops v0.2 with package version `0.2.0.dev0`. Use Python 3.11+ on Linux or macOS;
+WorldForge v0.2.0 is the current release of the local Python package and CLI, extending v0.1.0.
+Use Python 3.11+ on Linux or macOS;
 Windows is not currently validated. No database, server, model account, or API key is required
 for the included payments example and reference agent.
 
@@ -15,9 +15,9 @@ source .venv/bin/activate
 python -m pip install -e '.[dev]'
 ```
 
-The v0.1.0 implementation remains available from its immutable tag. To try the v0.2 development
-workflow, use `worldforge/v0.2-integration-failure-discovery`; cloud tasks should use their existing
-checkout. Do not develop directly on `main`.
+Use the default `main` checkout for v0.2.0. The previous v0.1.0 release remains available from
+its immutable tag. Cloud tasks should use their existing checkout; create a
+separate branch for development rather than working directly on `main`.
 
 ## Compile and inspect a world
 
@@ -92,7 +92,7 @@ latency come from recorded simulation. Tokens and costs remain unavailable unles
 explicitly reports usage and prices are configured. New runs embed provenance-bearing resource
 reports; preserved legacy runs retain their original usage contract.
 
-## v0.2 development workflows
+## v0.2.0 workflows
 
 For static MCP tools:
 

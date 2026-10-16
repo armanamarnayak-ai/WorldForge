@@ -2,7 +2,7 @@
 
 WorldForge is a local modular monolith. The released v0.1.0 foundation proves OpenAPI → typed
 world → stateful payments simulation → agent → evaluation → event history → recorded-action replay.
-The v0.2 development branch extends this loop with local MCP compilation, richer failures,
+WorldForge v0.2.0 extends this loop with local MCP compilation, richer failures,
 resource reporting, provider contracts, composition, and Failure Certificates.
 
 1. **Language and package:** Python 3.11+, a `src/worldforge` package, local CLI, and no server or

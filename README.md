@@ -1,4 +1,4 @@
-# WorldForge — v0.2 development
+# WorldForge v0.2.0
 
 **Give your AI a world to learn in before giving it yours.**
 
@@ -6,9 +6,9 @@ WorldForge is an open-source artificial experience engine for stateful synthetic
 where autonomous AI agents can be evaluated, stressed, observed, and replayed without executing
 production APIs.
 
-WorldForge v0.1.0 is the released foundation. This branch develops **v0.2 — Integration and
-Failure Discovery**, with package version `0.2.0.dev0`. It extends the existing local Python
-library and CLI; it is not a published v0.2 release. The `v0.1.0` tag remains immutable.
+**WorldForge v0.2.0 — Integration and Failure Discovery** is the current release, extending the
+v0.1.0 foundation with local integrations and reproducible failure discovery. It remains a local Python
+library and CLI. The `v0.1.0` tag remains immutable.
 
 ```text
 local OpenAPI / static MCP tools → typed world → bounded failure scenarios → agent
@@ -24,7 +24,7 @@ API key, network connection to an AI provider, or paid service.
 ## Try the payments example
 
 Requires Python 3.11 or newer on Linux or macOS. Windows is not currently validated.
-From a checkout of this development branch:
+From a checkout:
 
 ```bash
 python -m venv .venv
@@ -85,7 +85,7 @@ A search that finds no qualifying failure exits nonzero; it is evidence about th
 space, not proof that the agent is universally safe. See [the Failure Oracle guide](docs/v0.2-failure-oracle.md)
 for criteria, budgets, minimization, and certificate interpretation.
 
-## Available in this development branch
+## Available in v0.2.0
 
 - The v0.1 OpenAPI compiler, payments world, seeded scenarios, `AgentAdapter`, event histories,
   explicit evaluation, local run storage, CLI, and recorded-action replay.

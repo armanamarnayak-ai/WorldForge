@@ -3,14 +3,14 @@
 WorldForge v0.1.0 is released. Its tag is immutable: never move, overwrite, delete, or recreate
 it. Historical validation is retained in [v0.1-review.md](v0.1-review.md).
 
-The current v0.2 task prepares `worldforge/v0.2-integration-failure-discovery` for independent
-review with development package version `0.2.0.dev0`. It creates no v0.2 tag, GitHub release,
-or package-registry publication and does not authorize merging. These checks are useful for
-reviewing a development candidate; an official future release needs separate maintainer approval.
+The v0.2 implementation was reviewed in PR #3, passed CI on Python 3.11, 3.12, and 3.13, and
+was squash-merged into `main`. Prepare the official v0.2.0 package metadata and documentation on
+`worldforge/v0.2.0-release`, starting from the latest approved `main`. Release preparation does
+not create a tag, GitHub Release, or package-registry publication.
 
 ## Release validation
 
-On the development/review branch with development dependencies installed:
+On the release-preparation branch with development dependencies installed:
 
 ```bash
 ruff check .
@@ -33,9 +33,10 @@ The following Linux/macOS example uses temporary paths and an absolute example p
 REPO_ROOT="$PWD"
 VERIFY_ROOT="$(mktemp -d)"
 python -m venv "$VERIFY_ROOT/venv"
-"$VERIFY_ROOT/venv/bin/python" -m pip install "$REPO_ROOT"/dist/*.whl
+"$VERIFY_ROOT/venv/bin/python" -m pip install "$REPO_ROOT/dist/worldforge_engine-0.2.0-py3-none-any.whl"
 cd "$VERIFY_ROOT"
 "$VERIFY_ROOT/venv/bin/worldforge" --help
+"$VERIFY_ROOT/venv/bin/worldforge" version  # Must report 0.2.0.
 "$VERIFY_ROOT/venv/bin/worldforge" init
 "$VERIFY_ROOT/venv/bin/worldforge" import "$REPO_ROOT/examples/payments/openapi.yaml"
 "$VERIFY_ROOT/venv/bin/worldforge" scenario generate --count 2 --seed 42
@@ -51,11 +52,13 @@ assert len(runs) == 2, "expected two persisted runs"
 for run in runs:
     subprocess.run([str(cli), "replay", run.stem], check=True)
 PY
+"$VERIFY_ROOT/venv/bin/python" "$REPO_ROOT/scripts/verify_wheel.py" --source "$REPO_ROOT"
 cd "$REPO_ROOT"
 ```
 
-Run this with exactly one intended wheel in `dist/`; remove stale build artifacts before building
-if needed. GitHub CI performs equivalent checks on Python 3.11, 3.12, and 3.13. Keep build outputs
+The explicit wheel filename avoids installing an older build from `dist/`. The verification script
+also exercises MCP/mock provider, composition, resources, Oracle/certificates, and safe comparison.
+GitHub CI performs equivalent checks on Python 3.11, 3.12, and 3.13. Keep build outputs
 and temporary verification workspaces out of commits.
 
 ## Review and publication
@@ -63,15 +66,21 @@ and temporary verification workspaces out of commits.
 Check package metadata and the complete Apache-2.0 license; inspect both wheel and source
 distribution. Review `git diff` and `git status` for secrets, private observations, generated
 junk, unexpected files, and placeholder features. Confirm documentation matches the installed
-CLI. Confirm that package metadata and the changelog agree about development versus release status;
-leave an already correct version unchanged. Do not date an unreleased development entry as a release.
+CLI. Confirm that package metadata consistently reports `0.2.0` and that the changelog release
+entry is dated `2026-10-17`. Preserve the v0.1.0 entry and historical validation evidence.
 
-Open a review PR containing implementation/architecture changes, CLI commands, schema/version
-compatibility, exact validation evidence, manual verification, security notes, limitations, and
-explicitly deferred v0.3/v0.4 features. Stop for independent review; do not merge, create another
-tag/release, publish a package, or begin the next milestone as part of this task.
+Open a release-preparation PR into `main` describing the version/documentation changes, exact
+validation evidence, manual verification, and unchanged functionality/limitations. Complete full
+validation and obtain independent review before an authorized maintainer merges the PR. Release
+preparation itself must stop for review without merging, tagging, publishing, or beginning v0.3/v0.4.
 
-For a separately approved future release, maintainers must choose a fresh version/tag and an
-explicit approved commit. Existing tags remain immutable. Package-registry publication requires
-a separately configured, authorized publishing workflow; this repository's CI does not publish
-packages.
+Only after that approved PR is merged and a maintainer explicitly authorizes publication should
+the release operator confirm the exact approved `main` commit, check that `v0.2.0` does not already
+exist, and create an annotated `v0.2.0` tag pointing exactly to that commit. Push that tag, then
+create the normal stable GitHub Release from the existing tag. If the tag already exists, inspect
+it and do not recreate, move, overwrite, or delete it. Both `v0.1.0` and the future `v0.2.0` tag
+are immutable.
+
+Package-registry publication requires separate explicit authorization and a separately configured
+publishing workflow; this repository's CI does not publish packages. Tagging or creating a GitHub
+Release does not authorize PyPI or any other registry publication.
