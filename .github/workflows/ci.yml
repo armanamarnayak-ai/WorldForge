@@ -64,3 +64,4 @@ jobs:
           "$VERIFY_ROOT/venv/bin/worldforge" import "$GITHUB_WORKSPACE/examples/payments/openapi.yaml" --workspace response-lost
           "$VERIFY_ROOT/venv/bin/worldforge" scenario generate --count 2 --seed 42 --response-lost --workspace response-lost
           "$VERIFY_ROOT/venv/bin/worldforge" run --workspace response-lost
+          "$VERIFY_ROOT/venv/bin/python" "$GITHUB_WORKSPACE/scripts/verify_wheel.py" --source "$GITHUB_WORKSPACE"

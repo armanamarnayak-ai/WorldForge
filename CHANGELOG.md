@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.2.0.dev0 — Unreleased development
+
+- Static/local MCP tool-schema compiler with explicit synthetic bindings, output schemas,
+  preserved descriptions/provenance, bounded parsing, and compatibility reporting.
+- Versioned deterministic failure specifications for virtual delays, timeouts, lost responses,
+  duplicate delivery, stale reads, denial, rate limits, unavailable services, and response corruption.
+- Bounded Failure Oracle search, deletion minimization, repeated verification, self-contained
+  Failure Certificates, and CLI inspection/reproduction linked to replayable runs.
+- Honest refund-retry adversarial example that detects a changed idempotency key while retaining
+  the existing ledger's conservation and idempotency guarantees.
+- Resource Observatory reports with measurement provenance, warnings, provider usage metadata,
+  explicitly configured cost estimates, and aggregate summaries.
+- Provider-neutral contracts and a deterministic local mock adapter; no provider API key required.
+- Namespaced composed worlds, explicit cross-service relationships, and a minimal synthetic
+  email fixture using the shared simulator and runtime.
+- Schema `1.1` extensions with frozen released `1.0` schemas and compatibility for legacy run replay.
+
+Development implementation for independent review. No v0.2 tag, release, or registry publication.
+Dashboard work and all v0.3/v0.4 systems are deferred.
+
 ## 0.1.0 — 2026-10-14
 
 - Typed, versioned world, scenario, state, event, run, and evaluation contracts.

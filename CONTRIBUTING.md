@@ -1,8 +1,9 @@
 # Contributing to WorldForge
 
-WorldForge v0.1 focuses on one complete OpenAPI-to-evaluation-and-replay workflow. Please discuss
-large scope changes in an issue before implementing them; [ROADMAP.md](ROADMAP.md) distinguishes
-the current foundation from later work. Follow our [Code of Conduct](CODE_OF_CONDUCT.md).
+WorldForge v0.1.0 is the released foundation; v0.2 development extends integration and failure
+discovery. Please discuss large scope changes in an issue before implementing them;
+[ROADMAP.md](ROADMAP.md) distinguishes implemented development scope from later work.
+Follow our [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## Development setup
 
@@ -26,7 +27,8 @@ key or external application service is unnecessary for the reference workflow.
 Keep changes focused, preserve versioned contracts, and document compatibility changes. Add
 tests for behavior, failure paths, and important invariants. Keep simulator results independent
 of wall-clock time and global randomness; do not invent business semantics or precision in
-evaluation metrics. Document supported OpenAPI features as they change.
+evaluation metrics. Document supported OpenAPI/MCP features and deliberate schema versions as
+they change. Preserve frozen released schemas, historical run replay, and the immutable v0.1.0 tag.
 
 Before submitting, run:
 
@@ -50,7 +52,8 @@ Describe the concrete problem and resulting behavior, architecture decisions, co
 results of validation, known limitations, and manual reproduction steps. State the next milestone
 when relevant. Use the issue and PR templates and distinguish observed results from expectations.
 Do not weaken tests to obtain a passing build, add empty implementations for roadmap features,
-or automatically merge a release-candidate PR.
+or automatically merge a review PR. A development branch/PR does not authorize a new release,
+tag, package-registry publication, or later milestone implementation.
 
 For vulnerabilities, follow [SECURITY.md](SECURITY.md) rather than posting exploit details or
 sensitive data in a public issue.
