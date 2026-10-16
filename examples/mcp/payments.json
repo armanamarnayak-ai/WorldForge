@@ -1,0 +1,663 @@
+{
+  "x-worldforge": {
+    "id": "payments-mcp",
+    "version": "1",
+    "title": "Local MCP Payments",
+    "rules": [
+      "refund_payment_exists",
+      "refund_amount_positive",
+      "refund_total_within_payment",
+      "refund_idempotency_key"
+    ],
+    "resources": {
+      "customer": {
+        "type": "object",
+        "x-worldforge-resource": "customer",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "name"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "email": {
+            "type": "string",
+            "maxLength": 254
+          }
+        }
+      },
+      "payment": {
+        "type": "object",
+        "x-worldforge-resource": "payment",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "customer_id",
+          "amount",
+          "currency",
+          "status"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "customer_id": {
+            "type": "string",
+            "minLength": 1,
+            "x-worldforge-reference": "customer"
+          },
+          "amount": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "currency": {
+            "type": "string",
+            "enum": [
+              "USD",
+              "EUR",
+              "INR"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "succeeded",
+              "partially_refunded",
+              "refunded"
+            ],
+            "default": "succeeded"
+          },
+          "duplicate_of": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "default": null,
+            "x-worldforge-reference": "payment"
+          },
+          "refunded_amount": {
+            "type": "integer",
+            "minimum": 0,
+            "default": 0
+          }
+        }
+      },
+      "refund": {
+        "type": "object",
+        "x-worldforge-resource": "refund",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "payment_id",
+          "amount",
+          "idempotency_key"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "payment_id": {
+            "type": "string",
+            "minLength": 1,
+            "x-worldforge-reference": "payment"
+          },
+          "amount": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "idempotency_key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          }
+        }
+      }
+    }
+  },
+  "tools": [
+    {
+      "name": "create_customer",
+      "description": "Create a synthetic customer",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "email": {
+            "type": "string",
+            "maxLength": 254
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "additionalProperties": false
+      },
+      "x-worldforge": {
+        "kind": "create",
+        "resource": "customer"
+      },
+      "outputSchema": {
+        "type": "object",
+        "x-worldforge-resource": "customer",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "name"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "email": {
+            "type": "string",
+            "maxLength": 254
+          }
+        }
+      }
+    },
+    {
+      "name": "list_customers",
+      "description": "List synthetic customers",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      },
+      "x-worldforge": {
+        "kind": "list",
+        "resource": "customer"
+      },
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "x-worldforge-resource": "customer",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "name"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "name": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 100
+                },
+                "email": {
+                  "type": "string",
+                  "maxLength": 254
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "get_customer",
+      "description": "Retrieve a customer",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "additionalProperties": false
+      },
+      "x-worldforge": {
+        "kind": "get",
+        "resource": "customer"
+      },
+      "outputSchema": {
+        "type": "object",
+        "x-worldforge-resource": "customer",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "name"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "email": {
+            "type": "string",
+            "maxLength": 254
+          }
+        }
+      }
+    },
+    {
+      "name": "create_payment",
+      "description": "Create a successful synthetic payment",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "customer_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "amount": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "currency": {
+            "type": "string",
+            "enum": [
+              "USD",
+              "EUR",
+              "INR"
+            ]
+          },
+          "duplicate_of": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "customer_id",
+          "amount",
+          "currency"
+        ],
+        "additionalProperties": false
+      },
+      "x-worldforge": {
+        "kind": "create",
+        "resource": "payment"
+      },
+      "outputSchema": {
+        "type": "object",
+        "x-worldforge-resource": "payment",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "customer_id",
+          "amount",
+          "currency",
+          "status"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "customer_id": {
+            "type": "string",
+            "minLength": 1,
+            "x-worldforge-reference": "customer"
+          },
+          "amount": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "currency": {
+            "type": "string",
+            "enum": [
+              "USD",
+              "EUR",
+              "INR"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "succeeded",
+              "partially_refunded",
+              "refunded"
+            ],
+            "default": "succeeded"
+          },
+          "duplicate_of": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "default": null,
+            "x-worldforge-reference": "payment"
+          },
+          "refunded_amount": {
+            "type": "integer",
+            "minimum": 0,
+            "default": 0
+          }
+        }
+      }
+    },
+    {
+      "name": "list_payments",
+      "description": "List payments, optionally for one customer",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "customer_id": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "x-worldforge": {
+        "kind": "list",
+        "resource": "payment"
+      },
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "x-worldforge-resource": "payment",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "customer_id",
+                "amount",
+                "currency",
+                "status"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "customer_id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "x-worldforge-reference": "customer"
+                },
+                "amount": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "currency": {
+                  "type": "string",
+                  "enum": [
+                    "USD",
+                    "EUR",
+                    "INR"
+                  ]
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "succeeded",
+                    "partially_refunded",
+                    "refunded"
+                  ],
+                  "default": "succeeded"
+                },
+                "duplicate_of": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "default": null,
+                  "x-worldforge-reference": "payment"
+                },
+                "refunded_amount": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "default": 0
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "get_payment",
+      "description": "Retrieve a payment",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "additionalProperties": false
+      },
+      "x-worldforge": {
+        "kind": "get",
+        "resource": "payment"
+      },
+      "outputSchema": {
+        "type": "object",
+        "x-worldforge-resource": "payment",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "customer_id",
+          "amount",
+          "currency",
+          "status"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "customer_id": {
+            "type": "string",
+            "minLength": 1,
+            "x-worldforge-reference": "customer"
+          },
+          "amount": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "currency": {
+            "type": "string",
+            "enum": [
+              "USD",
+              "EUR",
+              "INR"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "succeeded",
+              "partially_refunded",
+              "refunded"
+            ],
+            "default": "succeeded"
+          },
+          "duplicate_of": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "default": null,
+            "x-worldforge-reference": "payment"
+          },
+          "refunded_amount": {
+            "type": "integer",
+            "minimum": 0,
+            "default": 0
+          }
+        }
+      }
+    },
+    {
+      "name": "create_refund",
+      "description": "A first call creates a refund and updates the payment. Repeating the same key and arguments returns the original refund without another mutation. Both calls return the same 201 status and refund data. Reusing a key with changed arguments fails. Cumulative refunds may not exceed the payment amount. Keys are scoped to this synthetic world run.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "payment_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "amount": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "idempotency_key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          }
+        },
+        "required": [
+          "payment_id",
+          "amount",
+          "idempotency_key"
+        ],
+        "additionalProperties": false
+      },
+      "x-worldforge": {
+        "kind": "refund",
+        "resource": "refund"
+      },
+      "outputSchema": {
+        "type": "object",
+        "x-worldforge-resource": "refund",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "payment_id",
+          "amount",
+          "idempotency_key"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "payment_id": {
+            "type": "string",
+            "minLength": 1,
+            "x-worldforge-reference": "payment"
+          },
+          "amount": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "idempotency_key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          }
+        }
+      }
+    },
+    {
+      "name": "list_refunds",
+      "description": "List refunds, optionally for one payment",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "payment_id": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "x-worldforge": {
+        "kind": "list",
+        "resource": "refund"
+      },
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "x-worldforge-resource": "refund",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "payment_id",
+                "amount",
+                "idempotency_key"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "payment_id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "x-worldforge-reference": "payment"
+                },
+                "amount": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "idempotency_key": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

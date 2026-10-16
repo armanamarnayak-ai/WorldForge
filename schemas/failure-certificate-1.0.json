@@ -1,0 +1,1236 @@
+{
+  "$defs": {
+    "CompatibilityIssue": {
+      "additionalProperties": false,
+      "properties": {
+        "location": {
+          "title": "Location",
+          "type": "string"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        },
+        "severity": {
+          "enum": [
+            "warning",
+            "unsupported"
+          ],
+          "title": "Severity",
+          "type": "string"
+        }
+      },
+      "required": [
+        "location",
+        "severity",
+        "reason"
+      ],
+      "title": "CompatibilityIssue",
+      "type": "object"
+    },
+    "EvaluationResult": {
+      "additionalProperties": false,
+      "properties": {
+        "constraint_violations": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Constraint Violations",
+          "type": "array"
+        },
+        "objective_completed": {
+          "title": "Objective Completed",
+          "type": "boolean"
+        },
+        "success": {
+          "title": "Success",
+          "type": "boolean"
+        },
+        "termination": {
+          "title": "Termination",
+          "type": "string"
+        },
+        "usage": {
+          "$ref": "#/$defs/ResourceUsage"
+        }
+      },
+      "required": [
+        "success",
+        "objective_completed",
+        "termination",
+        "usage"
+      ],
+      "title": "EvaluationResult",
+      "type": "object"
+    },
+    "FailureCriterion": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "default": "unsafe_retry",
+          "enum": [
+            "unsafe_retry",
+            "objective_failure",
+            "constraint_violation",
+            "excessive_retries",
+            "any_failure"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "retry_limit": {
+          "default": 3,
+          "maximum": 1000,
+          "minimum": 0,
+          "title": "Retry Limit",
+          "type": "integer"
+        }
+      },
+      "title": "FailureCriterion",
+      "type": "object"
+    },
+    "FailureInjection": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "title": "Action",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "error_before",
+            "response_lost"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "occurrence": {
+          "default": 1,
+          "minimum": 1,
+          "title": "Occurrence",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "action",
+        "kind"
+      ],
+      "title": "FailureInjection",
+      "type": "object"
+    },
+    "FailureSpec": {
+      "additionalProperties": false,
+      "description": "Versioned deterministic synthetic fault; latency is virtual, never a sleep.",
+      "properties": {
+        "action": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Action",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "error_before",
+            "response_lost",
+            "delay",
+            "timeout",
+            "permission_denied",
+            "rate_limit",
+            "service_unavailable",
+            "malformed_response",
+            "stale_read",
+            "duplicate_delivery"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "latency_ms": {
+          "default": 0,
+          "maximum": 60000,
+          "minimum": 0,
+          "title": "Latency Ms",
+          "type": "integer"
+        },
+        "occurrence": {
+          "default": 1,
+          "maximum": 1000,
+          "minimum": 1,
+          "title": "Occurrence",
+          "type": "integer"
+        },
+        "schema_version": {
+          "const": "1.1",
+          "default": "1.1",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "action",
+        "kind"
+      ],
+      "title": "FailureSpec",
+      "type": "object"
+    },
+    "JsonValue": {},
+    "Measurement": {
+      "additionalProperties": false,
+      "properties": {
+        "provenance": {
+          "$ref": "#/$defs/MeasurementProvenance"
+        },
+        "source": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Source",
+          "type": "string"
+        },
+        "unit": {
+          "maxLength": 100,
+          "minLength": 1,
+          "title": "Unit",
+          "type": "string"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value"
+        }
+      },
+      "required": [
+        "provenance",
+        "source",
+        "unit"
+      ],
+      "title": "Measurement",
+      "type": "object"
+    },
+    "MeasurementProvenance": {
+      "enum": [
+        "EXACT",
+        "CALCULATED",
+        "ESTIMATED",
+        "UNAVAILABLE"
+      ],
+      "title": "MeasurementProvenance",
+      "type": "string"
+    },
+    "Origin": {
+      "enum": [
+        "declared",
+        "inferred"
+      ],
+      "title": "Origin",
+      "type": "string"
+    },
+    "PricingConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "input_usd_per_million": {
+          "maximum": 1000000,
+          "minimum": 0,
+          "title": "Input Usd Per Million",
+          "type": "number"
+        },
+        "output_usd_per_million": {
+          "maximum": 1000000,
+          "minimum": 0,
+          "title": "Output Usd Per Million",
+          "type": "number"
+        }
+      },
+      "required": [
+        "input_usd_per_million",
+        "output_usd_per_million"
+      ],
+      "title": "PricingConfig",
+      "type": "object"
+    },
+    "Provenance": {
+      "additionalProperties": false,
+      "properties": {
+        "origin": {
+          "$ref": "#/$defs/Origin"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        },
+        "source": {
+          "title": "Source",
+          "type": "string"
+        }
+      },
+      "required": [
+        "origin",
+        "source",
+        "reason"
+      ],
+      "title": "Provenance",
+      "type": "object"
+    },
+    "ProviderIdentity": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "default": "custom",
+          "enum": [
+            "mock",
+            "custom"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "model": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Model",
+          "type": "string"
+        },
+        "provider": {
+          "maxLength": 100,
+          "minLength": 1,
+          "title": "Provider",
+          "type": "string"
+        }
+      },
+      "required": [
+        "provider",
+        "model"
+      ],
+      "title": "ProviderIdentity",
+      "type": "object"
+    },
+    "ProviderRecord": {
+      "additionalProperties": false,
+      "properties": {
+        "identity": {
+          "$ref": "#/$defs/ProviderIdentity"
+        },
+        "pricing": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PricingConfig"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "request_id": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Request Id"
+        },
+        "usage": {
+          "$ref": "#/$defs/ProviderUsage"
+        }
+      },
+      "required": [
+        "identity"
+      ],
+      "title": "ProviderRecord",
+      "type": "object"
+    },
+    "ProviderUsage": {
+      "additionalProperties": false,
+      "properties": {
+        "input_tokens": {
+          "anyOf": [
+            {
+              "maximum": 1000000000000,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Input Tokens"
+        },
+        "output_tokens": {
+          "anyOf": [
+            {
+              "maximum": 1000000000000,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Output Tokens"
+        },
+        "rate_limit": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RateLimitMetadata"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "requests": {
+          "anyOf": [
+            {
+              "maximum": 1000000000000,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Requests"
+        }
+      },
+      "title": "ProviderUsage",
+      "type": "object"
+    },
+    "RateLimitMetadata": {
+      "additionalProperties": false,
+      "properties": {
+        "limit": {
+          "anyOf": [
+            {
+              "maximum": 1000000000000,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Limit"
+        },
+        "remaining": {
+          "anyOf": [
+            {
+              "maximum": 1000000000000,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Remaining"
+        },
+        "reset_after_ms": {
+          "anyOf": [
+            {
+              "maximum": 3600000,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reset After Ms"
+        }
+      },
+      "title": "RateLimitMetadata",
+      "type": "object"
+    },
+    "RefundObjective": {
+      "additionalProperties": false,
+      "properties": {
+        "amount": {
+          "exclusiveMinimum": 0,
+          "title": "Amount",
+          "type": "integer"
+        },
+        "customer_id": {
+          "title": "Customer Id",
+          "type": "string"
+        },
+        "duplicate_payment_id": {
+          "title": "Duplicate Payment Id",
+          "type": "string"
+        },
+        "kind": {
+          "const": "refund_duplicate",
+          "default": "refund_duplicate",
+          "title": "Kind",
+          "type": "string"
+        },
+        "original_payment_id": {
+          "title": "Original Payment Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "customer_id",
+        "original_payment_id",
+        "duplicate_payment_id",
+        "amount"
+      ],
+      "title": "RefundObjective",
+      "type": "object"
+    },
+    "Relationship": {
+      "additionalProperties": false,
+      "properties": {
+        "field": {
+          "title": "Field",
+          "type": "string"
+        },
+        "provenance": {
+          "$ref": "#/$defs/Provenance"
+        },
+        "resource": {
+          "title": "Resource",
+          "type": "string"
+        },
+        "target_resource": {
+          "title": "Target Resource",
+          "type": "string"
+        }
+      },
+      "required": [
+        "resource",
+        "field",
+        "target_resource",
+        "provenance"
+      ],
+      "title": "Relationship",
+      "type": "object"
+    },
+    "ResourceReport": {
+      "additionalProperties": false,
+      "properties": {
+        "metrics": {
+          "additionalProperties": {
+            "$ref": "#/$defs/Measurement"
+          },
+          "title": "Metrics",
+          "type": "object"
+        },
+        "providers": {
+          "items": {
+            "$ref": "#/$defs/ProviderRecord"
+          },
+          "maxItems": 2000,
+          "title": "Providers",
+          "type": "array"
+        },
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "warnings": {
+          "items": {
+            "$ref": "#/$defs/ResourceWarning"
+          },
+          "title": "Warnings",
+          "type": "array"
+        }
+      },
+      "title": "ResourceReport",
+      "type": "object"
+    },
+    "ResourceUsage": {
+      "additionalProperties": false,
+      "properties": {
+        "cost_confidence": {
+          "anyOf": [
+            {
+              "const": "ESTIMATED",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cost Confidence"
+        },
+        "counter_confidence": {
+          "const": "EXACT",
+          "default": "EXACT",
+          "title": "Counter Confidence",
+          "type": "string"
+        },
+        "elapsed_seconds": {
+          "default": 0.0,
+          "minimum": 0,
+          "title": "Elapsed Seconds",
+          "type": "number"
+        },
+        "estimated_cost_usd": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Estimated Cost Usd"
+        },
+        "failed_calls": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Failed Calls",
+          "type": "integer"
+        },
+        "input_tokens": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Input Tokens"
+        },
+        "output_tokens": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Output Tokens"
+        },
+        "retries": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Retries",
+          "type": "integer"
+        },
+        "tool_calls": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Tool Calls",
+          "type": "integer"
+        },
+        "world_steps": {
+          "default": 0,
+          "minimum": 0,
+          "title": "World Steps",
+          "type": "integer"
+        }
+      },
+      "title": "ResourceUsage",
+      "type": "object"
+    },
+    "ResourceWarning": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "title": "Code",
+          "type": "string"
+        },
+        "message": {
+          "title": "Message",
+          "type": "string"
+        }
+      },
+      "required": [
+        "code",
+        "message"
+      ],
+      "title": "ResourceWarning",
+      "type": "object"
+    },
+    "Scenario": {
+      "additionalProperties": false,
+      "properties": {
+        "allowed_actions": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Allowed Actions",
+          "type": "array"
+        },
+        "failures": {
+          "items": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/FailureInjection"
+              },
+              {
+                "$ref": "#/$defs/FailureSpec"
+              }
+            ]
+          },
+          "maxItems": 32,
+          "title": "Failures",
+          "type": "array"
+        },
+        "initial_state": {
+          "$ref": "#/$defs/WorldState"
+        },
+        "max_runtime_seconds": {
+          "default": 30.0,
+          "exclusiveMinimum": 0,
+          "maximum": 3600,
+          "title": "Max Runtime Seconds",
+          "type": "number"
+        },
+        "max_steps": {
+          "default": 12,
+          "maximum": 1000,
+          "minimum": 1,
+          "title": "Max Steps",
+          "type": "integer"
+        },
+        "objective": {
+          "$ref": "#/$defs/RefundObjective"
+        },
+        "scenario_id": {
+          "title": "Scenario Id",
+          "type": "string"
+        },
+        "schema_version": {
+          "default": "1.0",
+          "enum": [
+            "1.0",
+            "1.1"
+          ],
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "seed": {
+          "title": "Seed",
+          "type": "integer"
+        },
+        "simulated_latency_budget_ms": {
+          "default": 300000,
+          "maximum": 3600000,
+          "minimum": 0,
+          "title": "Simulated Latency Budget Ms",
+          "type": "integer"
+        },
+        "task": {
+          "title": "Task",
+          "type": "string"
+        },
+        "visible": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Visible",
+          "type": "object"
+        },
+        "world_id": {
+          "title": "World Id",
+          "type": "string"
+        },
+        "world_version": {
+          "default": "1",
+          "title": "World Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "scenario_id",
+        "world_id",
+        "seed",
+        "task",
+        "visible",
+        "initial_state",
+        "objective",
+        "allowed_actions"
+      ],
+      "title": "Scenario",
+      "type": "object"
+    },
+    "SearchAudit": {
+      "additionalProperties": false,
+      "properties": {
+        "budget_exhausted": {
+          "default": false,
+          "title": "Budget Exhausted",
+          "type": "boolean"
+        },
+        "candidate_runs": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Candidate Runs",
+          "type": "integer"
+        },
+        "minimization_runs": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Minimization Runs",
+          "type": "integer"
+        },
+        "one_minimal": {
+          "default": false,
+          "title": "One Minimal",
+          "type": "boolean"
+        },
+        "total_runs": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Total Runs",
+          "type": "integer"
+        },
+        "verification_runs": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Verification Runs",
+          "type": "integer"
+        }
+      },
+      "title": "SearchAudit",
+      "type": "object"
+    },
+    "SearchEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "payload": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Payload",
+          "type": "object"
+        },
+        "sequence": {
+          "minimum": 0,
+          "title": "Sequence",
+          "type": "integer"
+        },
+        "type": {
+          "enum": [
+            "SEARCH_STARTED",
+            "CANDIDATE_TESTED",
+            "FAILURE_DISCOVERED",
+            "MINIMIZATION_STEP",
+            "VERIFICATION_RUN",
+            "CERTIFICATE_CREATED",
+            "SEARCH_COMPLETED"
+          ],
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "sequence",
+        "type"
+      ],
+      "title": "SearchEvent",
+      "type": "object"
+    },
+    "WorldAction": {
+      "additionalProperties": false,
+      "properties": {
+        "input_schema": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Input Schema",
+          "type": "object"
+        },
+        "kind": {
+          "enum": [
+            "create",
+            "get",
+            "list",
+            "refund",
+            "unsupported"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "method": {
+          "title": "Method",
+          "type": "string"
+        },
+        "operation_id": {
+          "title": "Operation Id",
+          "type": "string"
+        },
+        "path": {
+          "title": "Path",
+          "type": "string"
+        },
+        "provenance": {
+          "$ref": "#/$defs/Provenance"
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reason"
+        },
+        "resource": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Resource"
+        },
+        "response_schemas": {
+          "additionalProperties": {
+            "additionalProperties": {
+              "$ref": "#/$defs/JsonValue"
+            },
+            "type": "object"
+          },
+          "title": "Response Schemas",
+          "type": "object"
+        },
+        "supported": {
+          "default": true,
+          "title": "Supported",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "operation_id",
+        "method",
+        "path",
+        "kind",
+        "provenance"
+      ],
+      "title": "WorldAction",
+      "type": "object"
+    },
+    "WorldDefinition": {
+      "additionalProperties": false,
+      "properties": {
+        "actions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/WorldAction"
+          },
+          "title": "Actions",
+          "type": "object"
+        },
+        "issues": {
+          "items": {
+            "$ref": "#/$defs/CompatibilityIssue"
+          },
+          "title": "Issues",
+          "type": "array"
+        },
+        "metadata": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Metadata",
+          "type": "object"
+        },
+        "relationships": {
+          "items": {
+            "$ref": "#/$defs/Relationship"
+          },
+          "title": "Relationships",
+          "type": "array"
+        },
+        "resources": {
+          "additionalProperties": {
+            "$ref": "#/$defs/WorldResource"
+          },
+          "title": "Resources",
+          "type": "object"
+        },
+        "rules": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Rules",
+          "type": "array"
+        },
+        "schema_version": {
+          "default": "1.0",
+          "enum": [
+            "1.0",
+            "1.1"
+          ],
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "version": {
+          "default": "1",
+          "title": "Version",
+          "type": "string"
+        },
+        "world_id": {
+          "minLength": 1,
+          "title": "World Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "world_id",
+        "title",
+        "resources",
+        "actions"
+      ],
+      "title": "WorldDefinition",
+      "type": "object"
+    },
+    "WorldResource": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "provenance": {
+          "$ref": "#/$defs/Provenance"
+        },
+        "schema": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Schema",
+          "type": "object"
+        }
+      },
+      "required": [
+        "name",
+        "schema",
+        "provenance"
+      ],
+      "title": "WorldResource",
+      "type": "object"
+    },
+    "WorldState": {
+      "additionalProperties": false,
+      "properties": {
+        "resources": {
+          "additionalProperties": {
+            "additionalProperties": {
+              "additionalProperties": {
+                "$ref": "#/$defs/JsonValue"
+              },
+              "type": "object"
+            },
+            "type": "object"
+          },
+          "title": "Resources",
+          "type": "object"
+        },
+        "step": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Step",
+          "type": "integer"
+        }
+      },
+      "title": "WorldState",
+      "type": "object"
+    }
+  },
+  "$id": "https://worldforge.local/schemas/failure-certificate-1.0.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "agent_configuration": {
+      "additionalProperties": {
+        "$ref": "#/$defs/JsonValue"
+      },
+      "title": "Agent Configuration",
+      "type": "object"
+    },
+    "agent_metadata": {
+      "additionalProperties": {
+        "$ref": "#/$defs/JsonValue"
+      },
+      "title": "Agent Metadata",
+      "type": "object"
+    },
+    "audit": {
+      "$ref": "#/$defs/SearchAudit"
+    },
+    "certificate_id": {
+      "pattern": "^WF-F-[0-9a-f]{32}$",
+      "title": "Certificate Id",
+      "type": "string"
+    },
+    "classification": {
+      "enum": [
+        "unsafe_retry",
+        "constraint_violation",
+        "objective_failure",
+        "excessive_retries",
+        "execution_error"
+      ],
+      "title": "Classification",
+      "type": "string"
+    },
+    "created_at": {
+      "title": "Created At",
+      "type": "string"
+    },
+    "criterion": {
+      "$ref": "#/$defs/FailureCriterion"
+    },
+    "evaluation": {
+      "$ref": "#/$defs/EvaluationResult"
+    },
+    "events": {
+      "items": {
+        "$ref": "#/$defs/SearchEvent"
+      },
+      "title": "Events",
+      "type": "array"
+    },
+    "minimized_conditions": {
+      "items": {
+        "$ref": "#/$defs/FailureSpec"
+      },
+      "maxItems": 8,
+      "title": "Minimized Conditions",
+      "type": "array"
+    },
+    "original_conditions": {
+      "items": {
+        "$ref": "#/$defs/FailureSpec"
+      },
+      "maxItems": 8,
+      "title": "Original Conditions",
+      "type": "array"
+    },
+    "reproduction_count": {
+      "maximum": 20,
+      "minimum": 2,
+      "title": "Reproduction Count",
+      "type": "integer"
+    },
+    "reproduction_rate": {
+      "maximum": 1,
+      "minimum": 0,
+      "title": "Reproduction Rate",
+      "type": "number"
+    },
+    "resource_report": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ResourceReport"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "run_ids": {
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 512,
+      "minItems": 1,
+      "title": "Run Ids",
+      "type": "array"
+    },
+    "scenario": {
+      "$ref": "#/$defs/Scenario"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "severity": {
+      "enum": [
+        "HIGH",
+        "MEDIUM",
+        "LOW"
+      ],
+      "title": "Severity",
+      "type": "string"
+    },
+    "severity_basis": {
+      "title": "Severity Basis",
+      "type": "string"
+    },
+    "successful_reproduction_count": {
+      "maximum": 20,
+      "minimum": 0,
+      "title": "Successful Reproduction Count",
+      "type": "integer"
+    },
+    "world": {
+      "$ref": "#/$defs/WorldDefinition"
+    },
+    "world_hash": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "title": "World Hash",
+      "type": "string"
+    }
+  },
+  "required": [
+    "certificate_id",
+    "created_at",
+    "world",
+    "world_hash",
+    "scenario",
+    "agent_metadata",
+    "agent_configuration",
+    "criterion",
+    "classification",
+    "severity",
+    "severity_basis",
+    "original_conditions",
+    "minimized_conditions",
+    "reproduction_count",
+    "successful_reproduction_count",
+    "reproduction_rate",
+    "evaluation",
+    "run_ids",
+    "audit",
+    "events"
+  ],
+  "title": "FailureCertificate",
+  "type": "object"
+}

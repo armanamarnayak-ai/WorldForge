@@ -1,0 +1,314 @@
+{
+  "$defs": {
+    "Measurement": {
+      "additionalProperties": false,
+      "properties": {
+        "provenance": {
+          "$ref": "#/$defs/MeasurementProvenance"
+        },
+        "source": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Source",
+          "type": "string"
+        },
+        "unit": {
+          "maxLength": 100,
+          "minLength": 1,
+          "title": "Unit",
+          "type": "string"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value"
+        }
+      },
+      "required": [
+        "provenance",
+        "source",
+        "unit"
+      ],
+      "title": "Measurement",
+      "type": "object"
+    },
+    "MeasurementProvenance": {
+      "enum": [
+        "EXACT",
+        "CALCULATED",
+        "ESTIMATED",
+        "UNAVAILABLE"
+      ],
+      "title": "MeasurementProvenance",
+      "type": "string"
+    },
+    "PricingConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "input_usd_per_million": {
+          "maximum": 1000000,
+          "minimum": 0,
+          "title": "Input Usd Per Million",
+          "type": "number"
+        },
+        "output_usd_per_million": {
+          "maximum": 1000000,
+          "minimum": 0,
+          "title": "Output Usd Per Million",
+          "type": "number"
+        }
+      },
+      "required": [
+        "input_usd_per_million",
+        "output_usd_per_million"
+      ],
+      "title": "PricingConfig",
+      "type": "object"
+    },
+    "ProviderIdentity": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "default": "custom",
+          "enum": [
+            "mock",
+            "custom"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "model": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Model",
+          "type": "string"
+        },
+        "provider": {
+          "maxLength": 100,
+          "minLength": 1,
+          "title": "Provider",
+          "type": "string"
+        }
+      },
+      "required": [
+        "provider",
+        "model"
+      ],
+      "title": "ProviderIdentity",
+      "type": "object"
+    },
+    "ProviderRecord": {
+      "additionalProperties": false,
+      "properties": {
+        "identity": {
+          "$ref": "#/$defs/ProviderIdentity"
+        },
+        "pricing": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PricingConfig"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "request_id": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Request Id"
+        },
+        "usage": {
+          "$ref": "#/$defs/ProviderUsage"
+        }
+      },
+      "required": [
+        "identity"
+      ],
+      "title": "ProviderRecord",
+      "type": "object"
+    },
+    "ProviderUsage": {
+      "additionalProperties": false,
+      "properties": {
+        "input_tokens": {
+          "anyOf": [
+            {
+              "maximum": 1000000000000,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Input Tokens"
+        },
+        "output_tokens": {
+          "anyOf": [
+            {
+              "maximum": 1000000000000,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Output Tokens"
+        },
+        "rate_limit": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RateLimitMetadata"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "requests": {
+          "anyOf": [
+            {
+              "maximum": 1000000000000,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Requests"
+        }
+      },
+      "title": "ProviderUsage",
+      "type": "object"
+    },
+    "RateLimitMetadata": {
+      "additionalProperties": false,
+      "properties": {
+        "limit": {
+          "anyOf": [
+            {
+              "maximum": 1000000000000,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Limit"
+        },
+        "remaining": {
+          "anyOf": [
+            {
+              "maximum": 1000000000000,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Remaining"
+        },
+        "reset_after_ms": {
+          "anyOf": [
+            {
+              "maximum": 3600000,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reset After Ms"
+        }
+      },
+      "title": "RateLimitMetadata",
+      "type": "object"
+    },
+    "ResourceWarning": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "title": "Code",
+          "type": "string"
+        },
+        "message": {
+          "title": "Message",
+          "type": "string"
+        }
+      },
+      "required": [
+        "code",
+        "message"
+      ],
+      "title": "ResourceWarning",
+      "type": "object"
+    }
+  },
+  "$id": "https://worldforge.local/schemas/resource-report-1.0.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "metrics": {
+      "additionalProperties": {
+        "$ref": "#/$defs/Measurement"
+      },
+      "title": "Metrics",
+      "type": "object"
+    },
+    "providers": {
+      "items": {
+        "$ref": "#/$defs/ProviderRecord"
+      },
+      "maxItems": 2000,
+      "title": "Providers",
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "warnings": {
+      "items": {
+        "$ref": "#/$defs/ResourceWarning"
+      },
+      "title": "Warnings",
+      "type": "array"
+    }
+  },
+  "title": "ResourceReport",
+  "type": "object"
+}

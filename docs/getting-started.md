@@ -1,6 +1,7 @@
 # Getting started
 
-WorldForge v0.1.0 is a local Python package and CLI. Use Python 3.11+ on Linux or macOS;
+WorldForge is a local Python package and CLI. The released foundation is v0.1.0; this branch
+develops v0.2 with package version `0.2.0.dev0`. Use Python 3.11+ on Linux or macOS;
 Windows is not currently validated. No database, server, model account, or API key is required
 for the included payments example and reference agent.
 
@@ -14,7 +15,9 @@ source .venv/bin/activate
 python -m pip install -e '.[dev]'
 ```
 
-The v0.1 implementation is available on `main`. Cloud tasks should use their existing checkout.
+The v0.1.0 implementation remains available from its immutable tag. To try the v0.2 development
+workflow, use `worldforge/v0.2-integration-failure-discovery`; cloud tasks should use their existing
+checkout. Do not develop directly on `main`.
 
 ## Compile and inspect a world
 
@@ -41,8 +44,16 @@ Scenarios start from independent synthetic customer and payment state. The task 
 the duplicate payment, preserve the original, and obey the refund constraints. The built-in
 reference agent inspects the tools and visible observations; it has no provider dependency.
 Default scenarios have no injected failures. For a response lost after a refund mutation,
-generate into a new workspace using `--response-lost` as shown in the README. The library also
-supports authored `Scenario.failures` with an `error_before` failure before mutation.
+generate into a new workspace:
+
+```bash
+worldforge import examples/payments/openapi.yaml --workspace .worldforge/response-lost
+worldforge scenario generate --count 2 --seed 42 --response-lost --workspace .worldforge/response-lost
+worldforge run --workspace .worldforge/response-lost
+```
+
+The library preserves legacy `Scenario.failures` and adds deliberately versioned `1.1`
+conditions/budgets. Read [the failure model](v0.2-failure-model.md) before authoring richer faults.
 
 Run output prints one line per scenario containing its run ID, PASS/FAIL, calls, retries, and
 steps. A failed evaluation or unsuccessful termination produces a nonzero exit code. To run
@@ -69,14 +80,41 @@ worldforge scenario generate --count 2 --seed 42 --workspace /tmp/worldforge-dem
 worldforge run --workspace /tmp/worldforge-demo
 ```
 
-Artifacts are local JSON: `world.json`, `scenarios.json`, and `runs/WF-<id>.json`. A run embeds
+Artifacts are local JSON: `world.json`, `scenarios.json`, `runs/WF-<id>.json`, search audit output,
+and `failures/WF-F-<id>.json` certificates. A run embeds
 its world, scenario and initial state, events, final state, and evaluation. It remains self-contained
 if the current workspace's world or scenarios change. `import` and `scenario generate` require
 `--force` to replace existing files; run logs receive unique IDs.
 
 Event timestamps use a logical clock. Run creation time and elapsed duration are wall-clock
-measurements and can differ between equivalent executions. Tool counts and retries are measured.
-Token and cost measurements are not collected in v0.1 and remain unavailable.
+measurements and can differ between equivalent executions. Tool counts, retries, and virtual
+latency come from recorded simulation. Tokens and costs remain unavailable unless an adapter
+explicitly reports usage and prices are configured. New runs embed provenance-bearing resource
+reports; preserved legacy runs retain their original usage contract.
+
+## v0.2 development workflows
+
+For static MCP tools:
+
+```bash
+worldforge import examples/mcp/payments.json --format mcp --workspace .worldforge/mcp
+worldforge scenario generate --count 2 --seed 42 --workspace .worldforge/mcp
+worldforge run --workspace .worldforge/mcp
+```
+
+For the initial Failure Oracle:
+
+```bash
+worldforge import examples/payments/openapi.yaml --workspace .worldforge/oracle
+worldforge falsify --agent vulnerable-reference --search examples/oracle/refund-search.json --workspace .worldforge/oracle
+```
+
+Use the actual certificate ID in `worldforge failure inspect ID` and `worldforge failure reproduce ID`,
+with the same workspace. The demonstration finds an unsafe changed-key retry after a hidden
+successful refund; the second full refund is rejected, so it does not claim actual double-refund
+effects. See [the Oracle guide](v0.2-failure-oracle.md) for minimization, verification, criteria,
+and safe-agent comparison; [composition](v0.2-composition.md) for the payments/email proof fixture;
+and [resources/providers](v0.2-resources-providers.md) for real reports and local mock execution.
 
 ## Python agent adapters
 
@@ -95,6 +133,10 @@ The runtime limits steps and awaits hooks with the configured timeout. Custom ad
 as trusted Python in the current process; these limits do not sandbox code or reliably interrupt
 blocking calls. Replay uses recorded tool actions, so external model outputs need not be
 deterministic for a stored run to be replayed.
+
+Built-in selectors include `reference`, `vulnerable-reference`, and `mock-provider`. The mock
+provider exercises the vendor-neutral boundary without a network request; default tokens and
+cost remain unavailable. None of the built-ins requests or logs hidden chain-of-thought.
 
 Do not place credentials or private data in example inputs. Local artifacts can contain sensitive
 observations, and automatic scrubbing is unavailable. See [SECURITY.md](../SECURITY.md).

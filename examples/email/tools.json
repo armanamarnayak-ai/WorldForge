@@ -1,0 +1,204 @@
+{
+  "x-worldforge": {
+    "id": "email",
+    "version": "1",
+    "title": "Synthetic Email Fixture",
+    "resources": {
+      "message": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "customer_id",
+          "subject",
+          "body"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "customer_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "subject": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "body": {
+            "type": "string",
+            "maxLength": 4096
+          }
+        }
+      }
+    }
+  },
+  "tools": [
+    {
+      "name": "create_message",
+      "description": "Create one synthetic local message. Never sends email.",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "customer_id",
+          "subject",
+          "body"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "customer_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "subject": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "body": {
+            "type": "string",
+            "maxLength": 4096
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "customer_id",
+          "subject",
+          "body"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "customer_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "subject": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "body": {
+            "type": "string",
+            "maxLength": 4096
+          }
+        }
+      },
+      "x-worldforge": {
+        "kind": "create",
+        "resource": "message"
+      }
+    },
+    {
+      "name": "get_message",
+      "description": "Read one synthetic message by identifier.",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "customer_id",
+          "subject",
+          "body"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "customer_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "subject": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "body": {
+            "type": "string",
+            "maxLength": 4096
+          }
+        }
+      },
+      "x-worldforge": {
+        "kind": "get",
+        "resource": "message"
+      }
+    },
+    {
+      "name": "list_messages",
+      "description": "List synthetic messages in stable identifier order; no filters.",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {}
+      },
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "customer_id",
+                "subject",
+                "body"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "customer_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "subject": {
+                  "type": "string",
+                  "maxLength": 200
+                },
+                "body": {
+                  "type": "string",
+                  "maxLength": 4096
+                }
+              }
+            }
+          }
+        }
+      },
+      "x-worldforge": {
+        "kind": "list",
+        "resource": "message"
+      }
+    }
+  ]
+}

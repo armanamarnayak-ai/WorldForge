@@ -1,0 +1,158 @@
+{
+  "$defs": {
+    "FailureCriterion": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "default": "unsafe_retry",
+          "enum": [
+            "unsafe_retry",
+            "objective_failure",
+            "constraint_violation",
+            "excessive_retries",
+            "any_failure"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "retry_limit": {
+          "default": 3,
+          "maximum": 1000,
+          "minimum": 0,
+          "title": "Retry Limit",
+          "type": "integer"
+        }
+      },
+      "title": "FailureCriterion",
+      "type": "object"
+    },
+    "FailureSpec": {
+      "additionalProperties": false,
+      "description": "Versioned deterministic synthetic fault; latency is virtual, never a sleep.",
+      "properties": {
+        "action": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Action",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "error_before",
+            "response_lost",
+            "delay",
+            "timeout",
+            "permission_denied",
+            "rate_limit",
+            "service_unavailable",
+            "malformed_response",
+            "stale_read",
+            "duplicate_delivery"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "latency_ms": {
+          "default": 0,
+          "maximum": 60000,
+          "minimum": 0,
+          "title": "Latency Ms",
+          "type": "integer"
+        },
+        "occurrence": {
+          "default": 1,
+          "maximum": 1000,
+          "minimum": 1,
+          "title": "Occurrence",
+          "type": "integer"
+        },
+        "schema_version": {
+          "const": "1.1",
+          "default": "1.1",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "action",
+        "kind"
+      ],
+      "title": "FailureSpec",
+      "type": "object"
+    }
+  },
+  "$id": "https://worldforge.local/schemas/search-1.0.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "agent_timeout": {
+      "default": 2.0,
+      "maximum": 60,
+      "minimum": 0.01,
+      "title": "Agent Timeout",
+      "type": "number"
+    },
+    "conditions": {
+      "items": {
+        "$ref": "#/$defs/FailureSpec"
+      },
+      "maxItems": 8,
+      "title": "Conditions",
+      "type": "array"
+    },
+    "criterion": {
+      "$ref": "#/$defs/FailureCriterion"
+    },
+    "family": {
+      "const": "payments_duplicate_charge",
+      "default": "payments_duplicate_charge",
+      "title": "Family",
+      "type": "string"
+    },
+    "max_candidates": {
+      "default": 32,
+      "maximum": 256,
+      "minimum": 1,
+      "title": "Max Candidates",
+      "type": "integer"
+    },
+    "max_runs": {
+      "default": 64,
+      "maximum": 512,
+      "minimum": 1,
+      "title": "Max Runs",
+      "type": "integer"
+    },
+    "max_seconds": {
+      "default": 30.0,
+      "maximum": 3600,
+      "minimum": 0.05,
+      "title": "Max Seconds",
+      "type": "number"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "seeds": {
+      "items": {
+        "type": "integer"
+      },
+      "maxItems": 32,
+      "minItems": 1,
+      "title": "Seeds",
+      "type": "array"
+    },
+    "verification_runs": {
+      "default": 3,
+      "maximum": 20,
+      "minimum": 2,
+      "title": "Verification Runs",
+      "type": "integer"
+    }
+  },
+  "title": "SearchSpec",
+  "type": "object"
+}
