@@ -380,3 +380,15 @@ def test_compiled_artifact_has_independent_serialized_output_budget() -> None:
 def test_unbounded_provenance_source_is_rejected() -> None:
     with pytest.raises(CompilerError, match="source name exceeds"):
         compile_document(minimal(), source="x" * 4097)
+
+
+@pytest.mark.parametrize("kind", [[], {}, True, 1, None])
+def test_malformed_declared_action_kind_is_transparently_unsupported(kind: Any) -> None:
+    document = sample()
+    document["paths"]["/customers"]["post"]["x-worldforge"]["kind"] = kind
+    world = compile_document(document)
+    action = world.actions["create_customer"]
+    assert not action.supported
+    assert action.kind == "unsupported"
+    assert "unknown declared action kind" in (action.reason or "")
+    assert any("unknown declared action kind" in issue.reason for issue in world.issues)

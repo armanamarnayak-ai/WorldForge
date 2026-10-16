@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "worldforge-engine"
-version = "0.1.0"
+version = "0.2.0.dev0"
 description = "Stateful synthetic worlds for reproducible agent evaluation"
 readme = "README.md"
 requires-python = ">=3.11"

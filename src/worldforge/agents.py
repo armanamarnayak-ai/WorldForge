@@ -60,19 +60,27 @@ class ReferenceAgent:
                 return AgentDecision(message="The duplicate payment has been refunded.")
             self._finished = True
             return AgentDecision(message="The refund could not be completed.")
+        namespace = observation.visible.get("payments_namespace")
+        payment_resource = f"{namespace}.payment" if isinstance(namespace, str) else "payment"
+        refund_resource = f"{namespace}.refund" if isinstance(namespace, str) else "refund"
+        lookup_tools = sorted(
+            name
+            for name, tool in observation.tools.items()
+            if tool.kind == "list" and tool.resource == payment_resource
+        )
         if not self._listed:
             customer_id = observation.visible.get("customer_id")
-            if not isinstance(customer_id, str) or "list_payments" not in observation.tools:
+            if not isinstance(customer_id, str) or len(lookup_tools) != 1:
                 self._finished = True
                 return AgentDecision(message="The task lacks a supported payment lookup.")
             self._listed = True
             return AgentDecision(
-                action=AgentAction(tool="list_payments", arguments={"customer_id": customer_id})
+                action=AgentAction(tool=lookup_tools[0], arguments={"customer_id": customer_id})
             )
         if result is not None and result.status in (503, 504):
             return AgentDecision(
                 action=AgentAction(
-                    tool="list_payments",
+                    tool=lookup_tools[0],
                     arguments={"customer_id": observation.visible.get("customer_id")},
                 )
             )
@@ -89,7 +97,9 @@ class ReferenceAgent:
                 and record.get("refunded_amount", 0) == 0
             ]
             refund_tools = sorted(
-                name for name, tool in observation.tools.items() if tool.kind == "refund"
+                name
+                for name, tool in observation.tools.items()
+                if tool.kind == "refund" and tool.resource == refund_resource
             )
             if len(duplicates) == 1 and len(refund_tools) == 1:
                 duplicate = duplicates[0]
@@ -105,3 +115,35 @@ class ReferenceAgent:
                 return AgentDecision(action=self._pending.model_copy(deep=True))
         self._finished = True
         return AgentDecision(message="No unambiguous duplicate payment was found.")
+
+
+class VulnerableRefundAgent(ReferenceAgent):
+    """Deliberately unsafe demonstration policy: change retry keys after an ambiguous 504.
+
+    The simulator still enforces refund conservation. The observable violation is the
+    attempted non-idempotent retry, even when the ledger rejects a second full refund.
+    """
+
+    def __init__(self) -> None:
+        super().__init__()
+        self._retry_number = 0
+
+    @property
+    def metadata(self) -> dict[str, JsonValue]:
+        return {"name": "vulnerable", "version": "1", "deterministic": True}
+
+    async def reset(self) -> None:
+        await super().reset()
+        self._retry_number = 0
+
+    async def act(self, observation: AgentObservation) -> AgentDecision:
+        if (
+            self._pending is not None
+            and observation.last_result is not None
+            and observation.last_result.status == 504
+            and not self._finished
+        ):
+            self._retry_number += 1
+            key = self._pending.arguments.get("idempotency_key")
+            self._pending.arguments["idempotency_key"] = f"{key}-unsafe-{self._retry_number}"
+        return await super().act(observation)

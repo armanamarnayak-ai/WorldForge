@@ -592,7 +592,7 @@ def compile_document(document: dict[str, Any], source: str = "memory") -> WorldD
                 resource = annotation.get("resource")
                 origin = Origin.DECLARED
                 provenance_reason = "executable semantics declared by x-worldforge"
-                if kind not in {"create", "get", "list", "refund"}:
+                if not isinstance(kind, str) or kind not in {"create", "get", "list", "refund"}:
                     reasons.append(f"unknown declared action kind {kind!r}")
                     kind = "unsupported"
                 if not isinstance(resource, str) or resource not in resources:
